@@ -29,9 +29,6 @@ configuracio_ia = types.GenerateContentConfig(
     top_k=40,               # Limita la selecció a les 40 paraules més probables
     # stop_sequences=['.']  # Opcional: Aturar-se en un punt
 )
-# SIGNES_ZODIACALS = [
-#     "Àries", "Taure"
-# ]
 
 # Llista dels 12 Signes del Zodíac
 SIGNES_ZODIACALS = [
@@ -112,16 +109,7 @@ for signe in SIGNES_ZODIACALS:
         path_font=RUTA_FONT,
         path_sortida=path_imatge_sortida
         )
-    # print(f"Imatge de {signe} generada correctament.")
-# Revisió i Exportació dels Resultats
-
-# print("\n" + "="*50)
-# print("✨ RESULTATS FINALS ✨")
-# print("="*50)
-
-# for signe, text in horoscops_generats.items():
-#     print(f"\n--- {signe.upper()} ---")
-#     print(text)
+    
 
 # EXPORTACIÓ DELS RESULTATS
 
@@ -171,5 +159,4 @@ with open(fitxer_csv, 'w', newline='', encoding='utf-8') as f:
     
 print(f"Exportat amb èxit a: **{fitxer_csv}**")
 
-# print("\nProcés Finalitzat. Revisa la carpeta del teu projecte.")
 
