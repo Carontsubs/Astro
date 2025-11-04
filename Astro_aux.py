@@ -21,12 +21,14 @@ import textwrap
 def inscriure_text_a_imatge(
     text_horoscop: str, 
     signe: str, 
+    data_horoscop: str, # 👈 NOU PARÀMETRE: la data a mostrar
     path_plantilla: str, 
     path_font: str, 
     path_sortida: str
 ):
-    """Superposa el text d'un horòscop a una imatge de plantilla."""
+    """Superposa el text d'un horòscop a una imatge de plantilla, incloent-hi la data."""
     
+
     # 1. Càrrega i Configuració Inicial
     try:
         img = Image.open(path_plantilla).convert("RGB")
@@ -38,8 +40,10 @@ def inscriure_text_a_imatge(
     try:
         # Defineix les mides de la font
         font_titol_mida = 18
+        font_data_mida = 10 # 👈 Mida més petita per a la data
         font_cos_mida = 12
         font_titol = ImageFont.truetype(path_font, font_titol_mida)
+        font_data = ImageFont.truetype(path_font, font_data_mida) # 👈 Nova font per a la data
         font_cos = ImageFont.truetype(path_font, font_cos_mida)
     except FileNotFoundError:
         print(f"Error: El fitxer de font no es troba a {path_font}")
@@ -47,8 +51,8 @@ def inscriure_text_a_imatge(
 
     dibuix = ImageDraw.Draw(img)
     
-    # 🌟 DEFINICIÓ DE COLORS (La teva variable 'color_text' ara és global dins la funció)
-    color_text = (255, 255, 255) # Blanc (Pots canviar-ho)
+    # 🌟 DEFINICIÓ DE COLORS
+    color_text = (255, 255, 255) # Blanc
     
     # 2. Definició de Zones 
     w, h = img.size
@@ -58,19 +62,14 @@ def inscriure_text_a_imatge(
     titol = f"HORÒSCOP {signe.upper()}"
     posicio_y_titol = 55 
 
-    # 🌟 NOU MÈTODE ROBUST DE CÀLCUL DE MIDES (Evita textsize obsolet i l'error de textsize/getlength)
     try:
-        # Mètode recomanat (Pillow 9.2.0+)
         titol_w = font_titol.getlength(titol)
     except AttributeError:
-        # Mètode de fallback (utilitza textbbox amb un rectangle de mida [0,0,w,h])
         bbox = dibuix.textbbox((0, 0), titol, font=font_titol)
         titol_w = bbox[2] - bbox[0]
     except Exception:
-         # Últim recurs si el text no es calcula bé, utilitza la mida de la font (no ideal, però millor que res)
-         titol_w = len(titol) * (font_titol_mida // 2) 
+          titol_w = len(titol) * (font_titol_mida // 2) 
 
-    # Càlcul de la Posició X centrada
     posicio_x_titol = centre_x - int(titol_w // 2)
     
     dibuix.text(
@@ -79,24 +78,44 @@ def inscriure_text_a_imatge(
         font=font_titol, 
         fill=color_text
     )
+    
+    # --- 🆕 NOU: 3b. Dibuixa la Data ---
+    
+    posicio_y_data = posicio_y_titol + font_titol_mida + 5 # Just sota del títol + un petit marge
+    
+    try:
+        data_w = font_data.getlength(data_horoscop)
+    except AttributeError:
+        bbox_data = dibuix.textbbox((0, 0), data_horoscop, font=font_data)
+        data_w = bbox_data[2] - bbox_data[0]
+    except Exception:
+          data_w = len(data_horoscop) * (font_data_mida // 2) 
+          
+    posicio_x_data = centre_x - int(data_w // 2)
+    
+    dibuix.text(
+        (posicio_x_data, posicio_y_data), 
+        data_horoscop, 
+        font=font_data, # 👈 Utilitza la font més petita
+        fill=color_text
+    )
+    # ---------------------------------
 
     # 4. Processament del Cos del Text
     
-    # Dividir el text llarg en línies més curtes.
+    # La posició inicial 'y_text' es mou a sota de la data
     line_limit = 35 
     linies = textwrap.wrap(text_horoscop, width=line_limit)
 
     # Posició inicial per al cos del text
-    y_text = 125
+    y_text = posicio_y_data + font_data_mida + 10 # Es comença a dibuixar el cos del text més avall
     line_spacing = 16
 
     # 5. Dibuixa cada línia del Cos
     for linia in linies:
         try:
-            # Utilitza el mètode de càlcul de Pillow modern
             line_w = font_cos.getlength(linia)
         except AttributeError:
-            # Utilitza el mètode antic o fallback
             bbox_line = dibuix.textbbox((0, 0), linia, font=font_cos)
             line_w = bbox_line[2] - bbox_line[0]
 

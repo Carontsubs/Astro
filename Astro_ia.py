@@ -39,6 +39,9 @@ SIGNES_ZODIACALS = [
 # Llista per emmagatzemar tots els horòscops generats
 horoscops_generats = {}
 
+# Utilitzem la data actual per als noms dels fitxers
+DATA_ACTUAL = datetime.datetime.now().strftime("%d-%m-%Y")
+
 # Defineix les rutes dels fitxers
 RUTA_PLANTILLA = "plantilla.jpg" # Canvia per la teva ruta
 RUTA_FONT = "arial.ttf" # Canvia per la teva ruta
@@ -105,6 +108,7 @@ for signe in SIGNES_ZODIACALS:
     aux.inscriure_text_a_imatge(
         text_horoscop=horoscops_generats[signe],
         signe=signe,
+        data_horoscop= DATA_ACTUAL, # 👈 NOU PARÀMETRE: la data a mostrar
         path_plantilla=RUTA_PLANTILLA,
         path_font=RUTA_FONT,
         path_sortida=path_imatge_sortida
@@ -117,8 +121,6 @@ print("\n" + "="*50)
 print("✨ EXPORTANT RESULTATS A ARXIUS... ✨")
 print("="*50)
 
-# Utilitzem la data actual per als noms dels fitxers
-DATA_ACTUAL = datetime.datetime.now().strftime("%Y-%m-%d")
 
 ### 1. Exportació a Fitxer de Text (.txt) ###
 fitxer_txt = f"horoscops_setmanals_{DATA_ACTUAL}.txt"
