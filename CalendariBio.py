@@ -1,6 +1,7 @@
 import ephem
 from datetime import datetime, timedelta
 import math
+import pytz
 
 # Diccionaris
 sign_elements = {
@@ -195,9 +196,11 @@ def lluna_plena_nova(start_date, end_date, step_hours=1):
     
     return llunes
 
+
 # Exemple d'ús amb dates actuals
-start_date = datetime.now()
-end_date = datetime.now() + timedelta(weeks=8)
+barcelona_tz = pytz.timezone('Europe/Madrid')
+start_date = barcelona_tz.localize(datetime.now())
+end_date = barcelona_tz.localize(datetime.now() + timedelta(weeks=8))
 print()
 print(start_date, end_date)
 
